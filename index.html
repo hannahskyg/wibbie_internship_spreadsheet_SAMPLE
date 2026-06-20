@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Spreadsheet Helper</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Internship Spreadsheet Helper</h1>
+    <p>Upload your internship CSV file, filter by industry/date, and quickly open application links.</p>
+
+    <section class="controls">
+      <label>
+        CSV file
+        <input id="csvFile" type="file" accept=".csv,text/csv">
+      </label>
+
+      <label>
+        Search
+        <input id="searchInput" type="text" placeholder="Company, role, location...">
+      </label>
+
+      <label>
+        Industry
+        <select id="industryFilter">
+          <option value="">All industries</option>
+        </select>
+      </label>
+
+      <label>
+        Sort date posted
+        <select id="dateSort">
+          <option value="desc">Newest first</option>
+          <option value="asc">Oldest first</option>
+        </select>
+      </label>
+    </section>
+
+    <p id="status" class="status">Upload a CSV to get started.</p>
+
+    <section class="table-wrapper">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Industry</th>
+            <th>Location</th>
+            <th>Date Posted</th>
+            <th>Apply</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
