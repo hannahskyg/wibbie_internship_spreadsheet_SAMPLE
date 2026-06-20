@@ -3,23 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internship Spreadsheet Helper</title>
+  <title>Internship Spreadsheet</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="container">
-    <h1>Internship Spreadsheet Helper</h1>
-    <p>Upload your internship CSV file, filter by industry/date, and quickly open application links.</p>
+    <h1>WIB Internship Spreadsheet</h1>
+    <p>Browse the internship spreadsheet and filter it by industry, location, and date posted.</p>
 
     <section class="controls">
       <label>
-        CSV file
-        <input id="csvFile" type="file" accept=".csv,text/csv">
-      </label>
-
-      <label>
         Search
-        <input id="searchInput" type="text" placeholder="Company, role, location...">
+        <input id="searchInput" type="text" placeholder="Company, role, pay, notes...">
       </label>
 
       <label>
@@ -27,6 +22,23 @@
         <select id="industryFilter">
           <option value="">All industries</option>
         </select>
+      </label>
+
+      <label>
+        Location
+        <select id="locationFilter">
+          <option value="">All locations</option>
+        </select>
+      </label>
+
+      <label>
+        Date posted after
+        <input id="dateAfterFilter" type="date">
+      </label>
+
+      <label>
+        Date posted before
+        <input id="dateBeforeFilter" type="date">
       </label>
 
       <label>
@@ -38,7 +50,7 @@
       </label>
     </section>
 
-    <p id="status" class="status">Upload a CSV to get started.</p>
+    <p id="status" class="status">Loading internship_spreadsheet.csv...</p>
 
     <section class="table-wrapper">
       <table id="resultsTable">
@@ -49,6 +61,7 @@
             <th>Industry</th>
             <th>Location</th>
             <th>Date Posted</th>
+            <th>Pay</th>
             <th>Apply</th>
           </tr>
         </thead>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Spreadsheet Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container admin-shell">
+    <h1>Admin Entry</h1>
+    <p>Paste a job description, send it through the private LLM parser, and append the parsed row to <strong>internship_spreadsheet.csv</strong>.</p>
+
+    <section class="admin-panel">
+      <label>
+        Admin token
+        <input id="adminToken" type="password" placeholder="Enter the secret token">
+      </label>
+
+      <label>
+        Job description
+        <textarea id="jobDescription" rows="14" placeholder="Paste a full job description here..."></textarea>
+      </label>
+
+      <div class="admin-actions">
+        <button id="submitButton" type="button">Parse and add entry</button>
+        <a class="admin-link" href="/">Back to public view</a>
+      </div>
+
+      <label>
+        Parsed result
+        <textarea id="resultOutput" rows="12" readonly></textarea>
+      </label>
+
+      <p id="status" class="status">Ready.</p>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

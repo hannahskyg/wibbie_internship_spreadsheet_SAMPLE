@@ -1,12 +1,21 @@
 :root {
   color-scheme: light;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
+  --bg-start: #eef3ff;
+  --bg-end: #f8fafc;
+  --ink: #1f2937;
+  --muted: #64748b;
+  --card: rgba(255, 255, 255, 0.92);
+  --line: #dbe3ee;
+  --accent: #2563eb;
 }
 
 body {
   margin: 0;
-  background: #f5f7fb;
-  color: #1f2937;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+    linear-gradient(180deg, var(--bg-start), var(--bg-end));
+  color: var(--ink);
 }
 
 .container {
@@ -17,11 +26,22 @@ body {
 
 h1 {
   margin: 0 0 8px;
+  letter-spacing: -0.03em;
+}
+
+.section-heading h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+}
+
+.section-heading p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin: 20px 0;
 }
@@ -33,23 +53,58 @@ label {
   font-size: 14px;
 }
 
+textarea,
 input,
 select {
   padding: 8px;
   border-radius: 6px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line);
   font-size: 14px;
+  background: #fff;
+  color: var(--ink);
 }
 
 .status {
   margin: 10px 0 16px;
+  color: var(--muted);
 }
 
 .table-wrapper {
   overflow-x: auto;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(219, 227, 238, 0.9);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.admin-shell {
+  max-width: 900px;
+}
+
+.admin-panel {
+  margin-top: 20px;
+  padding: 18px;
+  background: var(--card);
+  border: 1px solid rgba(219, 227, 238, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.admin-panel > label + label {
+  margin-top: 14px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.admin-link {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 table {
@@ -61,8 +116,9 @@ th,
 td {
   text-align: left;
   padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--line);
   font-size: 14px;
+  vertical-align: top;
 }
 
 th {
@@ -71,10 +127,20 @@ th {
 }
 
 a {
-  color: #2563eb;
+  color: var(--accent);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 16px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
 }

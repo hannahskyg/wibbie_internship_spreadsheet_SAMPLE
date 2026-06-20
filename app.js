@@ -1,9 +1,13 @@
-const csvFileInput = document.getElementById('csvFile');
 const searchInput = document.getElementById('searchInput');
 const industryFilter = document.getElementById('industryFilter');
+const locationFilter = document.getElementById('locationFilter');
+const dateAfterFilter = document.getElementById('dateAfterFilter');
+const dateBeforeFilter = document.getElementById('dateBeforeFilter');
 const dateSort = document.getElementById('dateSort');
 const statusEl = document.getElementById('status');
 const tableBody = document.querySelector('#resultsTable tbody');
+
+const dataUrl = 'internship_spreadsheet.csv';
 
 let allRows = [];
 
@@ -11,21 +15,6 @@ function createCell(text) {
   const td = document.createElement('td');
   td.textContent = text || '—';
   return td;
-}
-
-function sanitizeApplicationUrl(value) {
-  if (!value) {
-    return '';
-  }
-  try {
-    const parsed = new URL(value);
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      return parsed.toString();
-    }
-  } catch {
-    return '';
-  }
-  return '';
 }
 
 function parseCsv(text) {
@@ -80,18 +69,15 @@ function parseCsv(text) {
   return rows;
 }
 
-function getValue(row, availableHeaders, possibleHeaderNames) {
-  const target = availableHeaders.find((header) => possibleHeaderNames.includes(header));
-  if (!target) {
-    return '';
-  }
-  return row[target] || '';
+function normalizeText(value) {
+  return (value || '').toString().trim();
 }
 
 function normalizeDate(dateText) {
   if (!dateText) {
     return null;
   }
+
   const parsed = new Date(dateText);
   if (!Number.isNaN(parsed.getTime())) {
     return parsed;
@@ -136,15 +122,94 @@ function normalizeDate(dateText) {
   return null;
 }
 
+function parseToDateValue(dateText) {
+  const parsed = normalizeDate(dateText);
+  if (!parsed) {
+    return null;
+  }
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function rowSearchText(row) {
+  return [row.company, row.role, row.industry, row.location, row.pay, row.notes, row.workMode]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function getValue(rowMap, availableHeaders, possibleHeaderNames) {
+  const target = availableHeaders.find((header) => possibleHeaderNames.includes(header));
+  if (!target) {
+    return '';
+  }
+  return rowMap[target] || '';
+}
+
+function normalizeRow(rowMap, availableHeaders) {
+  const company = normalizeText(getValue(rowMap, availableHeaders, ['company']));
+  const role = normalizeText(getValue(rowMap, availableHeaders, ['role']));
+  const industry = normalizeText(getValue(rowMap, availableHeaders, ['industry']));
+  const location = normalizeText(getValue(rowMap, availableHeaders, ['location']));
+  const datePosted = normalizeText(getValue(rowMap, availableHeaders, ['date posted']));
+  const pay = normalizeText(getValue(rowMap, availableHeaders, ['pay']));
+  const applicationLink = normalizeText(
+    getValue(rowMap, availableHeaders, ['application link', 'apply', 'link', 'url'])
+  );
+  const notes = normalizeText(getValue(rowMap, availableHeaders, ['notes']));
+  const workMode = normalizeText(getValue(rowMap, availableHeaders, ['work mode', 'mode']));
+  const postedDate = normalizeDate(datePosted);
+
+  return {
+    company,
+    role,
+    industry,
+    location,
+    datePosted,
+    postedValue: parseToDateValue(datePosted),
+    postedTime: postedDate ? postedDate.getTime() : null,
+    pay,
+    applicationLink,
+    notes,
+    workMode,
+    searchText: rowSearchText({ company, role, industry, location, pay, notes, workMode })
+  };
+}
+
+function refreshSelect(selectElement, values, allLabel) {
+  const currentValue = selectElement.value;
+  selectElement.innerHTML = `<option value="">${allLabel}</option>`;
+
+  for (const value of values) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    selectElement.appendChild(option);
+  }
+
+  if (values.includes(currentValue)) {
+    selectElement.value = currentValue;
+  }
+}
+
 function renderTable() {
   const searchTerm = searchInput.value.trim().toLowerCase();
   const selectedIndustry = industryFilter.value;
+  const selectedLocation = locationFilter.value;
+  const afterValue = dateAfterFilter.value ? new Date(`${dateAfterFilter.value}T00:00:00`) : null;
+  const beforeValue = dateBeforeFilter.value ? new Date(`${dateBeforeFilter.value}T23:59:59.999`) : null;
   const sortDirection = dateSort.value;
 
-  const filtered = allRows.filter((entry) => {
-    const matchesIndustry = !selectedIndustry || entry.industry === selectedIndustry;
-    const matchesSearch = !searchTerm || entry.searchText.includes(searchTerm);
-    return matchesIndustry && matchesSearch;
+  const filtered = allRows.filter((row) => {
+    const matchesSearch = !searchTerm || row.searchText.includes(searchTerm);
+    const matchesIndustry = !selectedIndustry || row.industry === selectedIndustry;
+    const matchesLocation = !selectedLocation || row.location === selectedLocation;
+    const matchesAfter = !afterValue || (row.postedTime !== null && row.postedTime >= afterValue.getTime());
+    const matchesBefore = !beforeValue || (row.postedTime !== null && row.postedTime <= beforeValue.getTime());
+    return matchesSearch && matchesIndustry && matchesLocation && matchesAfter && matchesBefore;
   });
 
   filtered.sort((a, b) => {
@@ -171,6 +236,7 @@ function renderTable() {
     tr.appendChild(createCell(row.industry));
     tr.appendChild(createCell(row.location));
     tr.appendChild(createCell(row.datePosted));
+    tr.appendChild(createCell(row.pay));
 
     const applyCell = document.createElement('td');
     if (row.applicationLink) {
@@ -196,8 +262,9 @@ function loadCsv(text) {
   if (lines.length < 2) {
     allRows = [];
     tableBody.innerHTML = '';
-    statusEl.textContent = 'CSV has no internship rows.';
-    industryFilter.innerHTML = '<option value="">All industries</option>';
+    statusEl.textContent = 'internship_spreadsheet.csv has no internship rows yet.';
+    refreshSelect(industryFilter, [], 'All industries');
+    refreshSelect(locationFilter, [], 'All locations');
     return;
   }
 
@@ -208,52 +275,40 @@ function loadCsv(text) {
     headers.forEach((header, index) => {
       rowMap[header] = (cells[index] || '').trim();
     });
-
-    const datePosted = getValue(rowMap, headers, ['date posted', 'posted date', 'date']);
-
-    const company = getValue(rowMap, headers, ['company', 'company name']);
-    const role = getValue(rowMap, headers, ['role', 'position', 'title']);
-    const industry = getValue(rowMap, headers, ['industry', 'field']);
-    const location = getValue(rowMap, headers, ['location', 'city']);
-    const applicationLink = sanitizeApplicationUrl(getValue(rowMap, headers, ['application link', 'link', 'url', 'apply link']));
-    const postedDate = normalizeDate(datePosted);
-
-    return {
-      company,
-      role,
-      industry,
-      location,
-      searchText: [company, role, industry, location].join(' ').toLowerCase(),
-      datePosted,
-      postedTime: postedDate ? postedDate.getTime() : null,
-      applicationLink
-    };
+    return normalizeRow(rowMap, headers);
   });
 
   const industries = [...new Set(allRows.map((row) => row.industry).filter(Boolean))].sort((a, b) =>
     a.localeCompare(b, undefined, { sensitivity: 'base' })
   );
-  industryFilter.innerHTML = '<option value="">All industries</option>';
-  for (const industry of industries) {
-    const option = document.createElement('option');
-    option.value = industry;
-    option.textContent = industry;
-    industryFilter.appendChild(option);
-  }
+  const locations = [...new Set(allRows.map((row) => row.location).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' })
+  );
 
+  refreshSelect(industryFilter, industries, 'All industries');
+  refreshSelect(locationFilter, locations, 'All locations');
   renderTable();
 }
 
-csvFileInput.addEventListener('change', async (event) => {
-  const [file] = event.target.files;
-  if (!file) {
-    return;
-  }
+async function loadSpreadsheet() {
+  try {
+    const response = await fetch(dataUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Unable to load ${dataUrl}`);
+    }
 
-  const text = await file.text();
-  loadCsv(text);
-});
+    const text = await response.text();
+    loadCsv(text);
+  } catch {
+    statusEl.textContent = 'Run the local server to load internship_spreadsheet.csv.';
+  }
+}
 
 searchInput.addEventListener('input', renderTable);
 industryFilter.addEventListener('change', renderTable);
+locationFilter.addEventListener('change', renderTable);
+dateAfterFilter.addEventListener('change', renderTable);
+dateBeforeFilter.addEventListener('change', renderTable);
 dateSort.addEventListener('change', renderTable);
+
+loadSpreadsheet();
