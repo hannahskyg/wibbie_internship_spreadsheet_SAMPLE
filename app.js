@@ -217,7 +217,9 @@ function loadCsv(text) {
     };
   });
 
-  const industries = [...new Set(allRows.map((row) => row.industry).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const industries = [...new Set(allRows.map((row) => row.industry).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' })
+  );
   industryFilter.innerHTML = '<option value="">All industries</option>';
   for (const industry of industries) {
     const option = document.createElement('option');
