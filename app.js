@@ -80,8 +80,8 @@ function parseCsv(text) {
   return rows;
 }
 
-function getValue(row, availableHeaders, names) {
-  const target = availableHeaders.find((header) => names.includes(header));
+function getValue(row, availableHeaders, possibleHeaderNames) {
+  const target = availableHeaders.find((header) => possibleHeaderNames.includes(header));
   if (!target) {
     return '';
   }
@@ -97,7 +97,7 @@ function normalizeDate(dateText) {
     return parsed;
   }
 
-  const parts = dateText.split(/[\/\-.]/).map((part) => part.trim());
+  const parts = dateText.split(/[\/.-]/).map((part) => part.trim());
   if (parts.length === 3) {
     const [first, second, third] = parts.map(Number);
     if ([first, second, third].every((n) => !Number.isNaN(n))) {
@@ -117,9 +117,6 @@ function normalizeDate(dateText) {
         } else if (second > 12 && first <= 12) {
           month = first;
           day = second;
-        } else {
-          day = first;
-          month = second;
         }
       }
 
