@@ -80,8 +80,8 @@ function parseCsv(text) {
   return rows;
 }
 
-function getValue(row, headers, names) {
-  const target = headers.find((header) => names.includes(header));
+function getValue(row, availableHeaders, names) {
+  const target = availableHeaders.find((header) => names.includes(header));
   if (!target) {
     return '';
   }
@@ -97,16 +97,41 @@ function normalizeDate(dateText) {
     return parsed;
   }
 
-  const parts = dateText.split(/[\/-]/).map((part) => part.trim());
+  const parts = dateText.split(/[\/\-.]/).map((part) => part.trim());
   if (parts.length === 3) {
-    const [a, b, c] = parts.map(Number);
-    if ([a, b, c].every((n) => !Number.isNaN(n))) {
-      const yyyy = c > 31 ? c : a;
-      const mm = c > 31 ? a : b;
-      const dd = c > 31 ? b : c;
-      const fallback = new Date(yyyy, mm - 1, dd);
-      if (!Number.isNaN(fallback.getTime())) {
-        return fallback;
+    const [first, second, third] = parts.map(Number);
+    if ([first, second, third].every((n) => !Number.isNaN(n))) {
+      let year;
+      let month;
+      let day;
+
+      if (parts[0].length === 4 || first >= 1000) {
+        year = first;
+        month = second;
+        day = third;
+      } else if (parts[2].length === 4 || third >= 1000) {
+        year = third;
+        if (first > 12 && second <= 12) {
+          day = first;
+          month = second;
+        } else if (second > 12 && first <= 12) {
+          month = first;
+          day = second;
+        } else {
+          day = first;
+          month = second;
+        }
+      }
+
+      if (year && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        const fallback = new Date(year, month - 1, day);
+        if (
+          fallback.getFullYear() === year &&
+          fallback.getMonth() === month - 1 &&
+          fallback.getDate() === day
+        ) {
+          return fallback;
+        }
       }
     }
   }
