@@ -146,14 +146,13 @@ function renderTable() {
 
   const filtered = allRows.filter((entry) => {
     const matchesIndustry = !selectedIndustry || entry.industry === selectedIndustry;
-    const haystack = [entry.company, entry.role, entry.industry, entry.location].join(' ').toLowerCase();
-    const matchesSearch = !searchTerm || haystack.includes(searchTerm);
+    const matchesSearch = !searchTerm || entry.searchText.includes(searchTerm);
     return matchesIndustry && matchesSearch;
   });
 
   filtered.sort((a, b) => {
-    const aTime = a.postedDate ? a.postedDate.getTime() : -Infinity;
-    const bTime = b.postedDate ? b.postedDate.getTime() : -Infinity;
+    const aTime = a.postedTime;
+    const bTime = b.postedTime;
     return sortDirection === 'asc' ? aTime - bTime : bTime - aTime;
   });
 
@@ -206,14 +205,22 @@ function loadCsv(text) {
 
     const datePosted = getValue(rowMap, headers, ['date posted', 'posted date', 'date']);
 
+    const company = getValue(rowMap, headers, ['company', 'company name']);
+    const role = getValue(rowMap, headers, ['role', 'position', 'title']);
+    const industry = getValue(rowMap, headers, ['industry', 'field']);
+    const location = getValue(rowMap, headers, ['location', 'city']);
+    const applicationLink = sanitizeApplicationUrl(getValue(rowMap, headers, ['application link', 'link', 'url', 'apply link']));
+    const postedDate = normalizeDate(datePosted);
+
     return {
-      company: getValue(rowMap, headers, ['company', 'company name']),
-      role: getValue(rowMap, headers, ['role', 'position', 'title']),
-      industry: getValue(rowMap, headers, ['industry', 'field']),
-      location: getValue(rowMap, headers, ['location', 'city']),
+      company,
+      role,
+      industry,
+      location,
+      searchText: [company, role, industry, location].join(' ').toLowerCase(),
       datePosted,
-      postedDate: normalizeDate(datePosted),
-      applicationLink: sanitizeApplicationUrl(getValue(rowMap, headers, ['application link', 'link', 'url', 'apply link']))
+      postedTime: postedDate ? postedDate.getTime() : -Infinity,
+      applicationLink
     };
   });
 
