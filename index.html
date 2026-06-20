@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WIB Internship Opportunities</title>
+  <style>
+    :root {
+      --blue-900: #0e3b66;
+      --blue-700: #1f5f9b;
+      --blue-100: #e8f2fb;
+      --green-700: #1f8a5b;
+      --green-500: #2db36d;
+      --green-100: #e9f8f0;
+      --text-900: #112033;
+      --text-600: #4b5f73;
+      --white: #ffffff;
+      --shadow: 0 8px 24px rgba(13, 53, 90, 0.12);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text-900);
+      background: linear-gradient(180deg, #f4f9ff 0%, #f7fcfa 100%);
+    }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    h1, h2 {
+      margin: 0 0 12px;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+      color: var(--blue-900);
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--text-600);
+    }
+
+    .featured {
+      margin-bottom: 32px;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .featured-card {
+      background: linear-gradient(135deg, var(--blue-100) 0%, var(--green-100) 100%);
+      border: 1px solid rgba(31, 95, 155, 0.18);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: var(--blue-700);
+      color: var(--white);
+      padding: 5px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .featured-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .meta {
+      margin: 2px 0;
+      color: var(--text-600);
+      font-size: 0.95rem;
+    }
+
+    .board-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 18px;
+    }
+
+    .filter-btn {
+      border: 1px solid rgba(31, 95, 155, 0.32);
+      background: var(--white);
+      color: var(--blue-900);
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--green-700);
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--blue-700), var(--green-700));
+      color: var(--white);
+      border-color: transparent;
+    }
+
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .job-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid rgba(17, 32, 51, 0.08);
+      box-shadow: 0 4px 14px rgba(17, 32, 51, 0.08);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .job-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .category {
+      display: inline-block;
+      align-self: flex-start;
+      background: var(--green-100);
+      color: var(--green-700);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      padding: 5px 10px;
+      font-weight: 700;
+    }
+
+    .apply-btn {
+      margin-top: 8px;
+      border: none;
+      border-radius: 10px;
+      background: var(--green-500);
+      color: var(--white);
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .apply-btn:hover {
+      background: var(--green-700);
+      transform: translateY(-1px);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: var(--white);
+      border: 1px dashed rgba(17, 32, 51, 0.2);
+      border-radius: var(--radius);
+      padding: 20px;
+      color: var(--text-600);
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .featured-grid, .jobs-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        padding-top: 24px;
+      }
+
+      .featured-grid, .jobs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>WIB Internship Opportunities</h1>
+      <p class="subtitle">Discover curated internships in FinTech, Product Management, and Data Analytics.</p>
+    </header>
+
+    <section class="featured">
+      <h2>Top 3 Opportunities of the Week</h2>
+      <div id="featuredJobs" class="featured-grid"></div>
+    </section>
+
+    <section>
+      <h2>Internship Board</h2>
+      <div class="board-controls" id="filters">
+        <button class="filter-btn active" data-filter="All">All</button>
+        <button class="filter-btn" data-filter="FinTech">FinTech</button>
+        <button class="filter-btn" data-filter="Product Management">Product Management</button>
+        <button class="filter-btn" data-filter="Data Analytics">Data Analytics</button>
+      </div>
+      <div id="jobsList" class="jobs-grid"></div>
+    </section>
+  </main>
+
+  <script>
+    const internshipJobs = [
+      { title: "Payments Operations Intern", company: "StripeWorks", category: "FinTech", deadline: "July 08, 2026", featured: true },
+      { title: "Product Strategy Intern", company: "BrightLoop", category: "Product Management", deadline: "July 10, 2026", featured: true },
+      { title: "Business Data Analyst Intern", company: "InsightPulse", category: "Data Analytics", deadline: "July 06, 2026", featured: true },
+      { title: "Risk & Compliance Intern", company: "BlueLedger", category: "FinTech", deadline: "July 12, 2026", featured: false },
+      { title: "Platform Product Intern", company: "NorthStar Apps", category: "Product Management", deadline: "July 14, 2026", featured: false },
+      { title: "Marketing Analytics Intern", company: "MetricHive", category: "Data Analytics", deadline: "July 11, 2026", featured: false },
+      { title: "FinTech Partnerships Intern", company: "CoinBridge", category: "FinTech", deadline: "July 15, 2026", featured: false }
+    ];
+
+    const featuredJobsEl = document.getElementById("featuredJobs");
+    const jobsListEl = document.getElementById("jobsList");
+    const filterContainer = document.getElementById("filters");
+
+    function renderFeaturedJobs() {
+      const featured = internshipJobs.filter((job) => job.featured).slice(0, 3);
+      featuredJobsEl.innerHTML = featured.map((job) => `
+        <article class="featured-card">
+          <span class="badge">Featured</span>
+          <h3>${job.title}</h3>
+          <p class="meta"><strong>Company:</strong> ${job.company}</p>
+          <p class="meta"><strong>Deadline:</strong> ${job.deadline}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderJobs(category = "All") {
+      const visibleJobs = category === "All"
+        ? internshipJobs
+        : internshipJobs.filter((job) => job.category === category);
+
+      if (visibleJobs.length === 0) {
+        jobsListEl.innerHTML = '<div class="empty-state">No opportunities found in this category yet.</div>';
+        return;
+      }
+
+      jobsListEl.innerHTML = visibleJobs.map((job) => `
+        <article class="job-card">
+          <span class="category">${job.category}</span>
+          <h3>${job.title}</h3>
+          <p class="meta"><strong>Company:</strong> ${job.company}</p>
+          <p class="meta"><strong>Deadline:</strong> ${job.deadline}</p>
+          <button class="apply-btn" type="button">Apply</button>
+        </article>
+      `).join("");
+    }
+
+    filterContainer.addEventListener("click", (event) => {
+      const button = event.target.closest(".filter-btn");
+      if (!button) return;
+
+      document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderJobs(button.dataset.filter);
+    });
+
+    renderFeaturedJobs();
+    renderJobs();
+  </script>
+</body>
+</html>
