@@ -153,6 +153,15 @@ function renderTable() {
   filtered.sort((a, b) => {
     const aTime = a.postedTime;
     const bTime = b.postedTime;
+    if (aTime === null && bTime === null) {
+      return 0;
+    }
+    if (aTime === null) {
+      return 1;
+    }
+    if (bTime === null) {
+      return -1;
+    }
     return sortDirection === 'asc' ? aTime - bTime : bTime - aTime;
   });
 
@@ -219,7 +228,7 @@ function loadCsv(text) {
       location,
       searchText: [company, role, industry, location].join(' ').toLowerCase(),
       datePosted,
-      postedTime: postedDate ? postedDate.getTime() : -Infinity,
+      postedTime: postedDate ? postedDate.getTime() : null,
       applicationLink
     };
   });
